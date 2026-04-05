@@ -87,19 +87,21 @@ $initials = getInitials($username);
     <div class="dashboard-wrapper">
         <!-- Sidebar -->
         <aside class="dashboard-sidebar">
-            <div class="sidebar-logo">
-                <h1>LUN'DRIVE</h1>
+            <div>
+                <div class="sidebar-logo">
+                    <h1>LUN'DRIVE</h1>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="dashboard.php" class="nav-link active">
+                        <span class="nav-icon">🏠</span>
+                        <span>Tableau de bord</span>
+                    </a>
+                    <a href="files.php?tab=user&folder=root" class="nav-link">
+                        <span class="nav-icon">📁</span>
+                        <span>Mes fichiers</span>
+                    </a>
+                </nav>
             </div>
-            <nav class="sidebar-nav">
-                <a href="dashboard.php" class="nav-link active">
-                    <span class="nav-icon">🏠</span>
-                    <span>Tableau de bord</span>
-                </a>
-                <a href="files.php?tab=user&folder=root" class="nav-link">
-                    <span class="nav-icon">📁</span>
-                    <span>Mes fichiers</span>
-                </a>
-            </nav>
             <div class="sidebar-footer">
                 <div class="user-info-sidebar">
                     <div class="user-avatar-small" style="background: <?= $avatarColor ?>;">
@@ -110,7 +112,7 @@ $initials = getInitials($username);
                         <div class="user-email-sidebar"><?= htmlspecialchars($email) ?></div>
                     </div>
                 </div>
-                <a href="logout.php" class="logout-btn-sidebar">LOG OUT</a>
+                <a href="logout.php" class="logout-btn-sidebar">SE DÉCONNECTER</a>
             </div>
         </aside>
 

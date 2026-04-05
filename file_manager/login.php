@@ -44,8 +44,13 @@ if (isLoggedIn()) {
                 
                 <div class="form-group">
                     <label for="password">Mot de passe</label>
-                    <input type="password" id="password" name="password" required 
-                           placeholder="*********">
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" required 
+                               placeholder="*********">
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="form-options">
@@ -59,19 +64,25 @@ if (isLoggedIn()) {
                 <button type="submit" class="btn-login">Se connecter</button>
             </form>
             
-            <div class="divider">
-                <span>Ou continuer avec</span>
-            </div>
-            
-            <button class="btn-google" onclick="alert('Fonctionnalité à venir')">
-                <span class="google-icon">G</span>
-                Google
-            </button>
-            
             <p class="register-link">
                 Pas encore de compte ? <a href="register.php">Créer un compte</a>
             </p>
         </div>
     </div>
+
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+    </script>
 </body>
 </html>

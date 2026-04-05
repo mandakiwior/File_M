@@ -1,0 +1,3 @@
+# Empêcher l'exécution de scripts dans le dossier sécurisé
+php_flag engine off
+AddType text/plain .html .htm .php .php3 .php4 .php5 .phtml .pl .py .jsp .asp .aspx .cgi

@@ -65,6 +65,7 @@ class Auth {
             return ['success' => false, 'message' => 'Erreur : ' . $e->getMessage()];
         }
     }
+
     
     // Déconnexion
     public function logout() {

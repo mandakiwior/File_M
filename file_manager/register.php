@@ -43,14 +43,24 @@ if (isLoggedIn()) {
                 
                 <div class="form-group">
                     <label for="password">Mot de passe</label>
-                    <input type="password" id="password" name="password" required 
-                           placeholder="*********" minlength="6">
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" required 
+                               placeholder="*********" minlength="6">
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="confirm_password">Confirmation de mot de passe</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required 
-                           placeholder="*********">
+                    <div class="password-container">
+                        <input type="password" id="confirm_password" name="confirm_password" required 
+                               placeholder="*********">
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirm_password')">
+                            👁️
+                        </button>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn-register">Créer compte</button>
@@ -61,5 +71,20 @@ if (isLoggedIn()) {
             </p>
         </div>
     </div>
+
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const button = input.nextElementSibling;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+    </script>
 </body>
 </html>
