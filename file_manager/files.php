@@ -230,10 +230,10 @@ $totalItems = count($userFolders) + count($userFiles);
                         <button type="button" class="action-btn" id="pasteUserBtn" onclick="preparePaste()">📌<br> Coller</button>
                         
                         <!-- Formulaire Suppression -->
-                        <form method="POST" action="delete.php" style="display: inline;" id="deleteForm" onsubmit="return prepareDelete()">
+                        <form method="POST" action="delete.php" style="display: inline;" id="deleteForm">
                             <input type="hidden" name="items" id="deleteItems" value="">
                             <input type="hidden" name="folder" value="<?= $currentFolder ?>">
-                            <button type="submit" class="action-btn">🗑️<br> Supprimer</button>
+                            <button type="button" class="action-btn" onclick="prepareDelete()">🗑️<br> Supprimer</button>
                         </form>
                         
                         <!-- Formulaire Renommer -->
@@ -395,6 +395,10 @@ $totalItems = count($userFolders) + count($userFiles);
 
                     // Charger le presse-papiers depuis localStorage au chargement
                     let clipboard = JSON.parse(localStorage.getItem('lundrive_clipboard') || '[]');
+
+                    function saveClipboard() {
+                        localStorage.setItem('lundrive_clipboard', JSON.stringify(clipboard));
+                    }
 
                     // Échapper les caractères HTML
                     function escapeHtml(text) {
@@ -568,7 +572,9 @@ $totalItems = count($userFolders) + count($userFiles);
                         count += document.querySelectorAll('.icons-view .icon-item.selected').length;
                         
                         const selectedCountSpan = document.getElementById('selectedCount');
-                        if (selectedCountSpan) selectedCountSpan.textContent = `${count}`;
+                        if (selectedCountSpan) {
+                            selectedCountSpan.textContent = `${count} élément${count > 1 ? 's' : ''} sélectionné${count > 1 ? 's' : ''}`;
+                        }
                     }
 
                     function getAllSelectedItems() {
@@ -596,10 +602,10 @@ $totalItems = count($userFolders) + count($userFiles);
                         const items = getSelectedItems();
                         if (items.length === 0) {
                             showNotification('Aucun élément sélectionné', 'warning', 2000);
-                            return false;
+                            return;
                         }
                         
-                        return showConfirmModal(
+                        showConfirmModal(
                             '⚠️ Confirmation de suppression',
                             `Êtes-vous sûr de vouloir supprimer définitivement ${items.length} élément(s) ?\n\nCette action est irréversible.`,
                             'Supprimer',
@@ -610,7 +616,6 @@ $totalItems = count($userFolders) + count($userFiles);
                                 showNotification(`Suppression en cours...`, 'info', 1500);
                                 document.getElementById('deleteForm').submit();
                             }
-                            return false;
                         });
                     }
 
@@ -664,19 +669,20 @@ $totalItems = count($userFolders) + count($userFiles);
                         }
                         
                         input.value = currentName;
-                        input.focus();
-                        input.select();
                         
                         modal.style.display = 'flex';
+                        input.focus();
+                        setTimeout(() => input.select(), 0);
                         
                         function closeModal(result = false) {
+                            const value = input.value.trim();
                             modal.style.display = 'none';
-                            input.value = '';
-                            if (result && input.value.trim()) {
+                            if (result && value) {
                                 document.getElementById('renameId').value = items[0];
-                                document.getElementById('renameName').value = input.value.trim();
+                                document.getElementById('renameName').value = value;
                                 document.getElementById('renameForm').submit();
                             }
+                            input.value = '';
                         }
                         
                         cancelBtn.onclick = () => closeModal(false);
@@ -858,7 +864,7 @@ $totalItems = count($userFolders) + count($userFiles);
                     function setItemVisibility(item, mode, visible) {
                         if (mode === 'details') item.style.display = visible ? '' : 'none';
                         else if (mode === 'list') item.style.display = visible ? 'flex' : 'none';
-                        else if (mode === 'icons') item.style.display = visible ? 'flex' : 'none';
+                        else if (mode === 'icons') item.style.display = visible ? '' : 'none';
                     }
 
                     function getItemName(item, mode) {

@@ -65,6 +65,14 @@
                 </div>
             </div>
             
+            <!-- Section Aide -->
+            <div class="settings-section">
+                <h4>❓ Aide</h4>
+                <div class="setting-item">
+                    <button class="btn-help-settings" id="openHelpBtn" type="button" onclick="openHelpModal(); return false;">Afficher le guide</button>
+                </div>
+            </div>
+
             <!-- Section À propos -->
             <div class="settings-section">
                 <h4>ℹ️ À propos</h4>
@@ -77,8 +85,62 @@
         </div>
         
         <div class="settings-footer">
-            <button class="btn-save-settings">💾 Enregistrer</button>
-            <button class="btn-cancel-settings">Annuler</button>
+            <button class="btn-save-settings" id="saveSettingsBtn">💾 Enregistrer</button>
+            <button class="btn-cancel-settings" id="cancelSettingsBtn">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<div id="helpModal" class="modal" style="display: none;">
+    <div class="modal-content help-modal">
+        <div class="settings-header">
+            <h3>❓ Guide d'utilisation</h3>
+            <button class="close-settings" id="closeHelpBtn">&times;</button>
+        </div>
+        <div class="settings-body">
+            <div class="help-content">
+                <h4>Navigation générale</h4>
+                <p>Utilisez les onglets en haut pour basculer entre votre espace utilisateur et l'espace sécurisé.</p>
+                <p>Le chemin du dossier courant est affiché dans le breadcrumb pour savoir où vous êtes dans l'arborescence.</p>
+
+                <h4>Créer un dossier</h4>
+                <p>Cliquez sur « Nouveau dossier », saisissez le nom, puis confirmez pour créer un sous-dossier dans le dossier courant.</p>
+
+                <h4>Importer un fichier</h4>
+                <p>Cliquez sur « Importer » pour sélectionner un fichier depuis votre ordinateur. Le fichier sera ajouté au dossier courant.</p>
+
+                <h4>Sélectionner des éléments</h4>
+                <p>Cliquez sur les cases à cocher pour sélectionner un ou plusieurs dossiers/fichiers.</p>
+                <ul>
+                    <li>Copier : met les éléments dans le presse-papiers.</li>
+                    <li>Couper : prépare les éléments pour déplacement.</li>
+                    <li>Coller : place les éléments copiés ou coupés dans le dossier courant.</li>
+                </ul>
+
+                <h4>Renommer</h4>
+                <p>Sélectionnez un seul élément, puis cliquez sur « Renommer ». Entrez le nouveau nom et confirmez.</p>
+
+                <h4>Supprimer</h4>
+                <p>Sélectionnez un ou plusieurs éléments, puis cliquez sur « Supprimer ». Confirmez l'action dans la boîte de dialogue.</p>
+
+                <h4>Changer de vue</h4>
+                <p>Le footer contient les boutons pour passer en vue Détails, Liste ou Icônes. Choisissez celle que vous préférez.</p>
+
+                <h4>Recherche</h4>
+                <p>Le champ de recherche filtre en temps réel les éléments affichés dans la vue active.</p>
+
+                <h4>Paramètres</h4>
+                <p>Dans le modal Paramètres, vous pouvez modifier :</p>
+                <ul>
+                    <li>la vue par défaut,</li>
+                    <li>la taille des icônes,</li>
+                    <li>le nombre d'éléments par page,</li>
+                    <li>l'activation des notifications.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="settings-footer">
+            <button class="btn-close-help" id="closeHelpFooterBtn">Fermer</button>
         </div>
     </div>
 </div>

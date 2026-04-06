@@ -9,14 +9,19 @@ $userId = $_SESSION['user_id'];
 $itemId = $_POST['id'] ?? '';
 $newName = trim($_POST['name'] ?? '');
 
+$currentFolder = $_POST['folder'] ?? 'root';
+if ($currentFolder === '') {
+    $currentFolder = 'root';
+}
+
 if (empty($itemId) || empty($newName)) {
-    header("Location: files.php?tab=user&error=Nom invalide");
+    header("Location: files.php?tab=user&folder=" . rawurlencode($currentFolder) . "&error=Nom invalide");
     exit();
 }
 
 // Vérifier les caractères interdits
-if (preg_match('/[\/\\\:\*\?\"\<\>\|]/', $newName)) {
-    header("Location: files.php?tab=user&error=Le nom contient des caractères interdits");
+if (preg_match('/[\/\\:\*\?\"\<\>\|]/', $newName)) {
+    header("Location: files.php?tab=user&folder=" . rawurlencode($currentFolder) . "&error=Le nom contient des caractères interdits");
     exit();
 }
 
@@ -33,7 +38,7 @@ if (strpos($itemId, 'folder_') === 0) {
     $folder = $stmt->fetch();
     
     if (!$folder) {
-        header("Location: files.php?tab=user&error=Dossier introuvable");
+        header("Location: files.php?tab=user&folder=" . rawurlencode($currentFolder) . "&error=Dossier introuvable");
         exit();
     }
     
@@ -62,7 +67,7 @@ if (strpos($itemId, 'folder_') === 0) {
     $stmt = $pdo->prepare("UPDATE folders SET name = ?, path = ? WHERE id = ?");
     $stmt->execute([$newName, $newFullPath, $folderId]);
     
-    header("Location: files.php?tab=user&success=Dossier renommé en '$newName'");
+    header("Location: files.php?tab=user&folder=" . rawurlencode($currentFolder) . "&success=Dossier renommé en '$newName'");
     
 } elseif (strpos($itemId, 'file_') === 0) {
     // Renommer un fichier
@@ -74,7 +79,7 @@ if (strpos($itemId, 'folder_') === 0) {
     $file = $stmt->fetch();
     
     if (!$file) {
-        header("Location: files.php?tab=user&error=Fichier introuvable");
+        header("Location: files.php?tab=user&folder=" . rawurlencode($currentFolder) . "&error=Fichier introuvable");
         exit();
     }
     
@@ -97,7 +102,7 @@ if (strpos($itemId, 'folder_') === 0) {
     $stmt = $pdo->prepare("UPDATE files SET name = ?, original_name = ?, path = ? WHERE id = ?");
     $stmt->execute([$newUniqueName, $newOriginalName, $newRelativePath, $fileId]);
     
-    header("Location: files.php?tab=user&success=Fichier renommé en '$newOriginalName'");
+    header("Location: files.php?tab=user&folder=" . rawurlencode($currentFolder) . "&success=Fichier renommé en '$newOriginalName'");
 }
 
 exit();

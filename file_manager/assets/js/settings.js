@@ -67,6 +67,7 @@ function closeSettingsModal() {
         modal.style.display = 'none';
         setTimeout(() => modal.remove(), 300);
     }
+    closeHelpModal();
 }
 
 // Afficher une notification (fallback si showNotification n'existe pas)
@@ -85,37 +86,74 @@ function showSettingsNotification(message, type = 'success', duration = 3000) {
 function initSettingsEvents() {
     console.log('initSettingsEvents appelée');
     
-    // Bouton fermer
-    const closeBtn = document.querySelector('.close-settings');
+    // Bouton fermer settings (X)
+    const closeBtn = document.querySelector('#settingsModal .close-settings');
     console.log('closeBtn trouvé:', closeBtn);
-    if (closeBtn) closeBtn.onclick = closeSettingsModal;
+    if (closeBtn) closeBtn.addEventListener('click', closeSettingsModal);
     
-    // Bouton annuler
-    const cancelBtn = document.querySelector('.btn-cancel-settings');
+    // Bouton annuler settings
+    const cancelBtn = document.getElementById('cancelSettingsBtn');
     console.log('cancelBtn trouvé:', cancelBtn);
-    if (cancelBtn) cancelBtn.onclick = closeSettingsModal;
+    if (cancelBtn) cancelBtn.addEventListener('click', closeSettingsModal);
     
-    // Bouton sauvegarder
-    const saveBtn = document.querySelector('.btn-save-settings');
+    // Bouton sauvegarder settings
+    const saveBtn = document.getElementById('saveSettingsBtn');
     console.log('saveBtn trouvé:', saveBtn);
-    if (saveBtn) saveBtn.onclick = saveSettings;
+    if (saveBtn) saveBtn.addEventListener('click', saveSettings);
     
     // Bouton changement mot de passe
     const pwdBtn = document.getElementById('changePasswordBtn');
     console.log('pwdBtn trouvé:', pwdBtn);
-    if (pwdBtn) pwdBtn.onclick = changePassword;
+    if (pwdBtn) pwdBtn.addEventListener('click', changePassword);
     
     // Bouton suppression compte
     const deleteBtn = document.getElementById('deleteAccountBtn');
     console.log('deleteBtn trouvé:', deleteBtn);
-    if (deleteBtn) deleteBtn.onclick = deleteAccount;
+    if (deleteBtn) deleteBtn.addEventListener('click', deleteAccount);
+
+    // Bouton d'aide
+    const openHelpBtn = document.getElementById('openHelpBtn');
+    console.log('openHelpBtn trouvé:', openHelpBtn);
+    if (openHelpBtn) openHelpBtn.addEventListener('click', openHelpModal);
+
+    // Bouton fermer help (X)
+    const closeHelpBtn = document.querySelector('#helpModal .close-settings');
+    console.log('closeHelpBtn trouvé:', closeHelpBtn);
+    if (closeHelpBtn) closeHelpBtn.addEventListener('click', closeHelpModal);
+
+    // Bouton fermer help (footer)
+    const closeHelpFooterBtn = document.getElementById('closeHelpFooterBtn');
+    console.log('closeHelpFooterBtn trouvé:', closeHelpFooterBtn);
+    if (closeHelpFooterBtn) closeHelpFooterBtn.addEventListener('click', closeHelpModal);
     
-    // Clic en dehors du modal pour fermer
+    // Clic en dehors du settings modal pour fermer
     const modal = document.getElementById('settingsModal');
     if (modal) {
-        modal.onclick = function(e) {
+        modal.addEventListener('click', function(e) {
             if (e.target === modal) closeSettingsModal();
-        };
+        });
+    }
+
+    // Clic en dehors du help modal pour fermer
+    const helpModal = document.getElementById('helpModal');
+    if (helpModal) {
+        helpModal.addEventListener('click', function(e) {
+            if (e.target === helpModal) closeHelpModal();
+        });
+    }
+}
+
+function openHelpModal() {
+    const helpModal = document.getElementById('helpModal');
+    if (helpModal) {
+        helpModal.classList.add('active');
+    }
+}
+
+function closeHelpModal() {
+    const helpModal = document.getElementById('helpModal');
+    if (helpModal) {
+        helpModal.classList.remove('active');
     }
 }
 
@@ -173,14 +211,25 @@ function saveSettings() {
 // Appliquer la taille des icônes
 function applyIconSize(size) {
     const fileIcons = document.querySelectorAll('.file-icon');
+    const listIcons = document.querySelectorAll('.list-icon');
+    const bigIcons = document.querySelectorAll('.icon-large');
+
     fileIcons.forEach(icon => {
-        if (size === 'small') {
-            icon.style.fontSize = '0.875rem';
-        } else if (size === 'medium') {
-            icon.style.fontSize = '1.125rem';
-        } else if (size === 'large') {
-            icon.style.fontSize = '1.5rem';
-        }
+        if (size === 'small') icon.style.fontSize = '1rem';
+        else if (size === 'medium') icon.style.fontSize = '1.5rem';
+        else if (size === 'large') icon.style.fontSize = '2rem';
+    });
+
+    listIcons.forEach(icon => {
+        if (size === 'small') icon.style.fontSize = '1rem';
+        else if (size === 'medium') icon.style.fontSize = '1.5rem';
+        else if (size === 'large') icon.style.fontSize = '2rem';
+    });
+
+    bigIcons.forEach(icon => {
+        if (size === 'small') icon.style.fontSize = '2rem';
+        else if (size === 'medium') icon.style.fontSize = '3rem';
+        else if (size === 'large') icon.style.fontSize = '4rem';
     });
 }
 
