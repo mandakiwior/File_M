@@ -10,11 +10,23 @@ header('Content-Type: application/json');
 $userId = $_SESSION['user_id'];
 $input = json_decode(file_get_contents('php://input'), true);
 
+// Débogage
+error_log('=== PASTE.PHP DEBUG ===');
+error_log('userId: ' . $userId);
+error_log('input reçu: ' . file_get_contents('php://input'));
+error_log('input decodé: ' . json_encode($input));
+
 $items = $input['items'] ?? [];
 $targetFolder = $input['target_folder'] ?? 'root';
-$isCut = $input['is_cut'] ?? false; // Vrai pour couper, faux pour copier
+$isCut = $input['is_cut'] ?? false;
+
+error_log('items count: ' . count($items));
+error_log('items: ' . json_encode($items));
+error_log('targetFolder: ' . $targetFolder);
+error_log('isCut: ' . ($isCut ? 'true' : 'false'));
 
 if (empty($items)) {
+    error_log('Erreur: aucun élément à coller');
     echo json_encode(['success' => false, 'message' => 'Aucun élément à coller']);
     exit();
 }

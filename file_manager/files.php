@@ -567,9 +567,18 @@ $totalItems = count($userFolders) + count($userFiles);
 
                     function updateSelectedCount() {
                         let count = 0;
-                        count += document.querySelectorAll('.details-view .file-checkbox:checked').length;
-                        count += document.querySelectorAll('.list-view .list-item.selected').length;
-                        count += document.querySelectorAll('.icons-view .icon-item.selected').length;
+                        const detailsView = document.querySelector('.details-view');
+                        const listView = document.querySelector('.list-view');
+                        const iconsView = document.querySelector('.icons-view');
+                        
+                        // Compter uniquement dans la vue active
+                        if (detailsView && detailsView.style.display !== 'none') {
+                            count = document.querySelectorAll('.details-view .file-checkbox:checked').length;
+                        } else if (listView && listView.style.display !== 'none') {
+                            count = document.querySelectorAll('.list-view .list-item.selected').length;
+                        } else if (iconsView && iconsView.style.display !== 'none') {
+                            count = document.querySelectorAll('.icons-view .icon-item.selected').length;
+                        }
                         
                         const selectedCountSpan = document.getElementById('selectedCount');
                         if (selectedCountSpan) {
@@ -579,17 +588,32 @@ $totalItems = count($userFolders) + count($userFiles);
 
                     function getAllSelectedItems() {
                         const selected = [];
-                        document.querySelectorAll('.details-view .file-checkbox:checked').forEach(cb => selected.push(cb.value));
-                        document.querySelectorAll('.list-view .list-item.selected').forEach(item => {
-                            const id = item.dataset.id;
-                            const type = item.dataset.type;
-                            if (id && type) selected.push(`${type}_${id}`);
-                        });
-                        document.querySelectorAll('.icons-view .icon-item.selected').forEach(item => {
-                            const id = item.dataset.id;
-                            const type = item.dataset.type;
-                            if (id && type) selected.push(`${type}_${id}`);
-                        });
+                        const detailsView = document.querySelector('.details-view');
+                        const listView = document.querySelector('.list-view');
+                        const iconsView = document.querySelector('.icons-view');
+                        
+                        // Déterminer quelle vue est active
+                        if (detailsView && detailsView.style.display !== 'none') {
+                            // Vue détails - récupérer les checkboxes cochées
+                            document.querySelectorAll('.details-view .file-checkbox:checked').forEach(cb => {
+                                if (cb.value) selected.push(cb.value);
+                            });
+                        } else if (listView && listView.style.display !== 'none') {
+                            // Vue liste - récupérer les éléments sélectionnés
+                            document.querySelectorAll('.list-view .list-item.selected').forEach(item => {
+                                const id = item.dataset.id;
+                                const type = item.dataset.type;
+                                if (id && type) selected.push(`${type}_${id}`);
+                            });
+                        } else if (iconsView && iconsView.style.display !== 'none') {
+                            // Vue icônes - récupérer les éléments sélectionnés
+                            document.querySelectorAll('.icons-view .icon-item.selected').forEach(item => {
+                                const id = item.dataset.id;
+                                const type = item.dataset.type;
+                                if (id && type) selected.push(`${type}_${id}`);
+                            });
+                        }
+                        
                         return selected;
                     }
 
@@ -739,12 +763,15 @@ $totalItems = count($userFolders) + count($userFiles);
 
                     function prepareCopy() {
                         const items = getSelectedItems();
+                        console.log('Copie - Éléments sélectionnés:', items);
                         if (items.length === 0) {
                             showNotification('Aucun élément sélectionné', 'warning', 2000);
                             return false;
                         }
                         clipboard = [...items];
                         saveClipboard();
+                        console.log('Copie - Clipboard sauvegardé:', clipboard);
+                        console.log('Copie - localStorage (lundrive_clipboard):', localStorage.getItem('lundrive_clipboard'));
                         showNotification(`${clipboard.length} élément(s) copié(s)`, 'success', 2500);
                         return true;
                     }
@@ -752,12 +779,14 @@ $totalItems = count($userFolders) + count($userFiles);
                     let cutItems = [];
                     function prepareCut() {
                         const items = getSelectedItems();
+                        console.log('Coupe - Éléments sélectionnés:', items);
                         if (items.length === 0) {
                             showNotification('Aucun élément sélectionné', 'warning', 2000);
                             return false;
                         }
                         cutItems = [...items];
                         localStorage.setItem('lundrive_cut', JSON.stringify(cutItems));
+                        console.log('Coupe - localStorage (lundrive_cut):', localStorage.getItem('lundrive_cut'));
                         showNotification(`${cutItems.length} élément(s) coupé(s). Utilisez Coller.`, 'info', 3000);
                         return true;
                     }
@@ -767,6 +796,9 @@ $totalItems = count($userFolders) + count($userFiles);
                         let copyClipboard = JSON.parse(localStorage.getItem('lundrive_clipboard') || '[]');
                         let itemsToPaste = [];
                         let isCut = false;
+                        
+                        console.log('Collage - cut clipboard:', cutClipboard);
+                        console.log('Collage - copy clipboard:', copyClipboard);
                         
                         if (cutClipboard.length > 0) {
                             itemsToPaste = cutClipboard;
@@ -781,14 +813,29 @@ $totalItems = count($userFolders) + count($userFiles);
                             return false;
                         }
                         
+                        console.log('Collage - Items à coller:', itemsToPaste);
+                        console.log('Collage - isCut:', isCut);
+                        console.log('Collage - currentFolder:', currentFolder);
+                        
                         showNotification(`Collage en cours...`, 'info', 1500);
+                        const payload = { 
+                            items: itemsToPaste, 
+                            target_folder: currentFolder, 
+                            is_cut: isCut 
+                        };
+                        console.log('Collage - Payload envoyé:', JSON.stringify(payload));
+                        
                         fetch('paste.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ items: itemsToPaste, target_folder: currentFolder, is_cut: isCut })
+                            body: JSON.stringify(payload)
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            console.log('Collage - Réponse du serveur (status):', response.status);
+                            return response.json();
+                        })
                         .then(data => {
+                            console.log('Collage - Données JSON reçues:', data);
                             if (data.success) {
                                 showNotification(data.message, 'success', 3000);
                                 if (isCut) {
@@ -803,7 +850,10 @@ $totalItems = count($userFolders) + count($userFiles);
                                 showNotification(data.message, 'error', 4000);
                             }
                         })
-                        .catch(error => showNotification('Erreur', 'error', 4000));
+                        .catch(error => {
+                            console.error('Collage - Erreur réseau:', error);
+                            showNotification('Erreur: ' + error.message, 'error', 4000);
+                        });
                         return false;
                     }
 
@@ -841,6 +891,7 @@ $totalItems = count($userFolders) + count($userFiles);
                         });
                         
                         // Re-initialiser les sélections après changement de vue
+                        initSelection();
                         initListSelection();
                         initIconsSelection();
                         updateSelectedCount();
@@ -981,6 +1032,23 @@ $totalItems = count($userFolders) + count($userFiles);
                             observer.observe(container, { attributes: true, attributeFilter: ['style'] });
                         });
                     }
+
+                    // ========== FONCTION DE DÉBOGAGE ==========
+                    function debugClipboard() {
+                        console.log('\\n=== DEBUG CLIPBOARD ===');
+                        console.log('Éléments sélectionnés:', getAllSelectedItems());
+                        console.log('Clipboard (var):', clipboard);
+                        console.log('localStorage (lundrive_clipboard):', localStorage.getItem('lundrive_clipboard'));
+                        console.log('cutItems (var):', cutItems);
+                        console.log('localStorage (lundrive_cut):', localStorage.getItem('lundrive_cut'));
+                        console.log('currentFolder:', currentFolder);
+                        const pb = JSON.parse(localStorage.getItem('lundrive_clipboard') || '[]');
+                        const pc = JSON.parse(localStorage.getItem('lundrive_cut') || '[]');
+                        console.log('Items parsés (clipboard):', pb.length, 'items');
+                        console.log('Items parsés (cut):', pc.length, 'items');
+                        console.log('======================\\n');
+                    }
+                    window.debugClipboard = debugClipboard;
 
                     // ========== INITIALISATION ==========
                     document.querySelectorAll('.view-mode-btn').forEach(btn => {
